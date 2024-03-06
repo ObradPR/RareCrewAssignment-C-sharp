@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model List<Employee>
+
+<div class="text-center">
+    <table id="employee-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Total time worked</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var obj in Model)
+            {
+                <tr class="@(obj.TotalHours < 100 ? "lessHours" : "")"> 
+                    <td>@obj.EmployeeName</td>
+                    <td>@obj.TotalHours hrs</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
