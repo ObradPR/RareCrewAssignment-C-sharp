@@ -42,3 +42,8 @@ td:first-child, th:first-child {
 .lessHours {
     background-color: rgb(255, 155, 155);
 }
+
+#chart{
+    width: 550px;
+    margin: 0 auto;
+}

@@ -3,22 +3,91 @@
 }
 @model List<Employee>
 
-<div class="text-center">
-    <table id="employee-table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Total time worked</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var obj in Model)
-            {
-                <tr class="@(obj.TotalHours < 100 ? "lessHours" : "")"> 
-                    <td>@obj.EmployeeName</td>
-                    <td>@obj.TotalHours hrs</td>
+@if(Model != null)
+{
+ 
+    <div class="text-center">
+        <table id="employee-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Total time worked</th>
                 </tr>
+            </thead>
+            <tbody>
+                @foreach(var obj in Model)
+                {
+                    <tr class="@(obj.TotalHours < 100 ? "lessHours" : "")"> 
+                        <td>@obj.EmployeeName</td>
+                        <td>@obj.TotalHours hrs</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="text-center" id="chart"></div>
+    <button class="btn btn-primary" id="download-chart" onclick="downloadChart()">Download PNG file</button>
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+        <script>
+            const employeeNames = [];
+            const employeeHours = [];
+
+            @foreach(var obj in Model)
+                {
+                <text>
+                    employeeNames.push('@obj.EmployeeName');
+                    employeeHours.push(@obj.TotalHours);
+                </text>
             }
-        </tbody>
-    </table>
-</div>
+
+            const options = {
+                series: employeeHours,
+                chart: {
+                    width: 550,
+                    type: 'pie',
+                },
+                labels: employeeNames,
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            const chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+
+            function downloadChart(){
+                const chart = document.querySelector("#chart");
+
+                domtoimage.toPng(chart)
+                    .then(function (dataUrl) {
+                        const a = document.createElement("a");
+                        a.href = dataUrl;
+                        a.download = "chart.png";
+
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    })
+                    .catch(function (error) {
+                        console.error('oops, something went wrong!', error);
+                    });
+            }
+        </script>
+    }
+}
+else
+{
+    <h1>There's no employees.</h1>
+}
